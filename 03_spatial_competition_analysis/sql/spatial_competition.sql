@@ -27,8 +27,6 @@ FROM mart.map_points
 WHERE geom IS NOT NULL;
 
 
-
-
 /* ---------------------------------------------------------
    (2) Competition distribution (banded histogram dataset)
    X: competition_band_label
