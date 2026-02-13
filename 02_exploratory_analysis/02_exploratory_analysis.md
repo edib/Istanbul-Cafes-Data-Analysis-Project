@@ -1,4 +1,4 @@
-# 02_exploratory_analysis
+# Exploratory Analysis
 
 Bu klasör, **01_data_pipeline** aşamasında üretilmiş olan temiz ve tip-güvenli verinin, analitik olarak **anlamlı, tutarlı ve güvenilir** olup olmadığını doğrulamak amacıyla oluşturulmuştur.
 
@@ -53,7 +53,10 @@ Bu metrikler, henüz **hangi ilçede ne yapılmalı** sorusuna cevap vermez; yal
 
 ## 2. İlçe Bazında Cafe Dağılımı
 
+
+
 ### Görsel: Total Number of Cafes by District
+<img width="602" height="458" alt="Ekran Resmi 2026-02-13 14 37 49" src="https://github.com/user-attachments/assets/34aa222f-7bdf-47b4-8b98-494cccf1be3a" />
 
 Bu analizde, `clean.cafes` tablosu kullanılarak ilçe bazında cafe sayıları incelenmiştir.
 
@@ -70,6 +73,7 @@ Bu aşamada bu soruya cevap verilmez; sadece **farklılık tespit edilir**.
 ## 3. Rating ve Review Dağılımları
 
 ### 3.1 Rating Distribution (Fine-Grain)
+<img width="602" height="451" alt="Ekran Resmi 2026-02-13 14 37 32" src="https://github.com/user-attachments/assets/752516ce-d8ec-4a04-ac32-e7aa9fa9e8a7" />
 
 Rating dağılımı incelendiğinde:
 
@@ -82,6 +86,7 @@ Bu durum:
 * Ya da düşük rating’li işletmelerin zamanla platformdan silindiğini
 
 ima edebilir.
+
 
 ---
 
@@ -104,6 +109,7 @@ kullanılmasının neden gerekli olduğunu açıkça göstermektedir.
 ## 4. 2km Rekabet Dağılımı (Mikro Düzey)
 
 ### Görsel: 2km Competition Distribution
+<img width="600" height="458" alt="Ekran Resmi 2026-02-13 14 38 38" src="https://github.com/user-attachments/assets/aad31834-508d-4cdd-8352-22ecfeb57d20" />
 
 Bu analizde, her bir cafe için 2km yarıçap içinde bulunan rakip sayısı incelenmiştir.
 
