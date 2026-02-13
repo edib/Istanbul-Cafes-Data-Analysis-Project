@@ -1,145 +1,258 @@
 
-# 03_spatial_competition_analysis
+# Spatial Competition Analysis
 
+Bu klasörde, İstanbul’daki cafe pazarında **mekânsal arz ve rekabet yapısını**
+hem **görsel (dashboard)** hem de **hesaplama (SQL)** seviyesinde inceliyorum.
 
-Bu klasör, İstanbul’daki cafe pazarında **mekânsal arz baskısını (spatial supply pressure)** analiz eder.
+Amaç:
 
-Amaç; cafelerin **nerede yoğunlaştığını**, **mikro ölçekte ne kadar rekabet altında olduklarını** ve bu rekabetin **ilçe düzeyinde nasıl bir baskıya dönüştüğünü** ortaya koymaktır.
+- Cafelerin **nerelerde yoğunlaştığını**
+- Her bir cafe’nin **yakın çevresinde ne kadar rekabet altında olduğunu**
+- Bu mikro rekabetin **ilçe bazında nasıl bir baskıya dönüştüğünü**
+
+net ve ölçülebilir şekilde ortaya koymaktır.
+
+Bu aşamada:
+- talep ölçümü yapılmaz,
+- trafik veya hareket verisi kullanılmaz,
+- karar veya öneri üretilmez.
+
+Sadece **arz + konum + rekabet** ele alınır.
 
 ---
 
 ## Kullanılan Tablolar / View’lar
 
-- `mart.map_points`  
-- `mart.map_points_lat_lon`  
-- `mart.cafe_competition_2km`  
-- `mart.v_competition_distribution`  
+Bu klasördeki tüm görseller ve hesaplamalar,
+aşağıdaki mevcut tablolar üzerinden üretilmiştir:
+
+- `mart.map_points`
+- `mart.map_points_lat_lon`
+- `mart.cafe_competition_2km`
+- `mart.v_competition_distribution`
 - `mart.v_avg_competition_by_district`
 
-Bu tabloların tamamı, önceki pipeline katmanında üretilmiş **temiz ve geometriye sahip** veriler üzerinden çalışır.
+Bu tabloların tamamı,
+önceki veri hazırlama katmanlarında
+geometri bilgisi üretilmiş ve temizlenmiş verilerdir.
 
 ---
 
 ## Görsel 1 — All Cafes: Spatial Distribution (Map)
-<img width="904" height="512" alt="Ekran Resmi 2026-02-13 12 52 35" src="https://github.com/user-attachments/assets/01df0aaa-9369-42c8-9213-85657b701f12" />
 
+<img width="904" height="512" alt="All Cafes Spatial Distribution" src="https://github.com/user-attachments/assets/01df0aaa-9369-42c8-9213-85657b701f12" />
 
-### Sorduğu soru
-> İstanbul’da cafeler mekânsal olarak nerelerde yoğunlaşıyor?
+### Ne anlatıyor? 
 
-### Neden bu görsel var?
-Bu harita, tüm rekabet analizlerinin **referans zeminidir**.
+Bu harita, İstanbul’daki tüm cafelerin
+**coğrafi dağılımını ve kümelenme eğilimlerini** gösterir.
 
-- Henüz rekabet ölçülmez  
-- Sadece **yoğunlaşma ve kümelenme** görülür  
-- Rekabetin potansiyel olarak **nerelerde sertleşebileceği** sezgisel biçimde anlaşılır  
+Henüz rekabet ölçülmez.
+Ama cafelerin hangi bölgelerde yoğunlaştığı
+ilk bakışta anlaşılır.
 
-Bu nedenle bu görsel, sonraki tüm analizlerin “başlangıç fotoğrafı”dır.
+Bu nedenle bu görsel,
+sonraki rekabet analizlerinin **referans zemini** olarak kullanılır.
 
-### Teknik notlar
-- Chart type: `deck.gl Scatterplot`
-- Dataset: `mart.map_points_lat_lon`
-- Latitude / Longitude: `latitude`, `longitude`
-- Opsiyonel renk: `rating_band`
+---
+
+### Teknik olarak ne yapıldı?
+
+Bu görselde **istatistiksel bir hesaplama yoktur**.
+
+SQL tarafında yapılan işlem,
+mevcut geometri bilgisinden
+harita için gerekli koordinatların çıkarılmasıdır:
+
+```
+
+latitude  = ST_Y(geom)
+longitude = ST_X(geom)
+
+```
+
+Bu işlem:
+- yeni bir metrik üretmez,
+- veri dağılımını değiştirmez,
+- sadece görselleştirme için format dönüşümüdür.
 
 ---
 
 ## Görsel 2 — 2km Competition Distribution
-<img width="790" height="462" alt="Ekran Resmi 2026-02-13 12 53 31" src="https://github.com/user-attachments/assets/79c14664-7a2d-4db8-b090-ed000de00b70" />
 
+<img width="790" height="462" alt="2km Competition Distribution" src="https://github.com/user-attachments/assets/79c14664-7a2d-4db8-b090-ed000de00b70" />
 
-### Sorduğu soru
-> Cafeler genel olarak düşük mü, orta mı, yoksa aşırı rekabet altında mı?
+### Ne anlatıyor? 
 
-### Rekabet metriği nasıl tanımlandı?
+Bu grafik, cafelerin
+**genel olarak ne seviyede rekabet altında olduğunu**
+dağılım olarak gösterir.
 
-Her cafe için:
+Yani soru şudur:
 
-- Merkez: cafe noktası (`geom`)
-- Yarıçap: **2000 metre**
-- Ölçüm: bu yarıçap içinde bulunan **diğer cafe sayısı**
+> “İstanbul’daki cafelerin çoğu düşük mü,
+> orta mı, yoksa aşırı rekabet altında mı?”
 
-```text
-competitors_within_2km = (2km içindeki tüm cafeler) - 1
-````
+---
 
-`-1` çıkarılır çünkü sorgu cafe’nin kendisini de kapsar.
+### Rekabet metriği nasıl hesaplandı?
 
-### Neden 2 km?
+Her cafe için aşağıdaki metrik kullanılmıştır:
 
-* İstanbul’da mahalle–semt erişimini temsil eder
-* 500 m fazla lokal, 5 km fazla geniş olur
-* 2 km, “rekabet hissini” veren orta ölçekli bir varsayımdır
+```
 
-Bu bir **analitik varsayım**dır; karar değil.
+competitors_within_2km
 
-### Neden band’leme yapıldı?
+```
 
-Rekabeti okunabilir hale getirmek için bucket’lara ayrıldı:
+Bu metrik, bir cafe’nin
+**2000 metre yarıçapı içinde bulunan diğer cafe sayısını**
+ifade eder.
 
-* `0–49`   → düşük rekabet
-* `50–99`  → orta
-* `100–149`→ yoğun
-* `150–249`→ çok yoğun
-* `250+`   → aşırı doygun
+---
 
-Bu sayede:
+### Kullanılan formül
 
-> “İstanbul’daki cafelerin ne kadarı aşırı rekabet altında?”
-> sorusu net biçimde cevaplanabilir.
+```
+
+# competitors_within_2km
+
+COUNT(cafes within 2000 meters) - 1
+
+```
+
+---
+
+### Formülün mantığı
+
+1. Cafe merkez nokta olarak alınır.
+2. `ST_DWithin(geom::geography, 2000)` ile
+   2000 metre içindeki tüm cafeler bulunur.
+3. Cafe’nin kendisi de bu kapsama girdiği için
+   sonuçtan **1 çıkarılır**.
+
+Bu çıkarım yapılmazsa,
+her cafe kendi kendisinin rakibi olarak sayılmış olur.
+
+---
+
+### Neden `geography` ve neden 2 km?
+
+- `geography` tipi,
+  mesafenin **metre cinsinden doğru** hesaplanmasını sağlar.
+- 2 km,
+  İstanbul’da mahalle / semt ölçeğinde
+  rekabet hissini temsil eden
+  orta ölçekli bir varsayımdır.
+
+Bu seçim:
+- analitik bir varsayımdır,
+- karar veya eşik değildir.
+
+---
+
+### Band’leme neden var?
+
+Rekabet değerleri,
+okunabilirliği artırmak için
+aşağıdaki aralıklara ayrılarak gösterilmiştir:
+
+- `0–49`
+- `50–99`
+- `100–149`
+- `150–249`
+- `250+`
+
+Bu band’leme:
+- skor veya ağırlık içermez,
+- yalnızca dağılımı daha net görmeyi sağlar.
 
 ---
 
 ## Görsel 3 — Average 2km Competition by District
-<img width="1427" height="307" alt="Ekran Resmi 2026-02-13 12 54 55" src="https://github.com/user-attachments/assets/48d68e0b-2189-4512-98c9-59e86075fe75" />
 
+<img width="1427" height="307" alt="Average Competition by District" src="https://github.com/user-attachments/assets/48d68e0b-2189-4512-98c9-59e86075fe75" />
 
-### Sorduğu soru
+### Ne anlatıyor? 
 
-> İlçe bazında ortalama bir cafe kaç rakiple karşı karşıya?
+Bu görsel, her ilçede
+**ortalama bir cafe’nin kaç rakiple karşı karşıya olduğunu**
+gösterir.
 
-### Nasıl hesaplandı?
+Yani mikro ölçekte hesaplanan rekabet,
+ilçe seviyesinde özetlenmiştir.
 
-```text
-AVG(competitors_within_2km)  → district level
+---
+
+### Teknik olarak nasıl hesaplandı?
+
+Kullanılan formül:
+
 ```
 
-Yani:
+# avg_competition_2km
 
-* İlçe içindeki tüm cafelerin 2km rekabet değerleri
-* İlçe bazında ortalaması alındı
+AVG(competitors_within_2km)
 
-### Analitik yorum
+```
 
-* Ortalama yüksek → **arz baskısı yüksek**
-* Ortalama düşük → **rekabet görece zayıf**
+---
 
-Bu tek başına “fırsat” anlamına gelmez.
-Talep ve kaliteyle **birleştiğinde** anlam kazanır (sonraki katmanlar).
+### Formülün mantığı
+
+1. İlçe içindeki tüm cafelerin
+   `competitors_within_2km` değerleri alınır.
+2. Bu değerlerin ilçe bazında ortalaması hesaplanır.
+
+Bu metrik:
+- ilçe genelinde **tipik bir cafe’nin**
+  maruz kaldığı rekabet seviyesini temsil eder.
+
+---
+
+### Nasıl yorumlanır?
+
+- Ortalama yüksek → **arz baskısı yüksek**
+- Ortalama düşük → **rekabet görece daha zayıf**
+
+Bu metrik tek başına “fırsat” anlamına gelmez.
+Talep ve kalite analizleriyle birlikte
+değerlendirildiğinde anlam kazanır.
 
 ---
 
 ## Metodolojik Sınırlamalar
 
-Bu analiz bilinçli varsayımlar içerir:
+Bu analiz bazı bilinçli varsayımlar içerir:
 
-* **Edge effect:** İstanbul sınırına yakın cafeler dış rakipleri görmez
-* **District label doğruluğu:** Ham verideki ilçe bilgisine bağlıdır
-* **Geom eksikleri:** `geom IS NULL` kayıtlar bilinçli olarak dışlanmıştır
-* **Ortalama etkisi:** Aşırı değerler ortalamayı etkileyebilir
+- İstanbul sınırına yakın cafeler,
+  sınır dışındaki rakipleri göremez.
+- İlçe bilgisi,
+  ham verideki `district` alanına bağlıdır.
+- `geom IS NULL` olan kayıtlar analize dahil edilmemiştir.
+- Ortalama değerler,
+  uç gözlemlerden etkilenebilir.
 
-Bu sınırlamalar, sonraki katmanlarda **çoklu metrik birleşimiyle** dengelenir.
+Bu sınırlamalar,
+sonraki katmanlarda
+farklı metriklerin birlikte kullanılmasıyla dengelenir.
+
+---
+
+## Çıktı
+
+Bu klasörün sonunda:
+
+- cafe arzının mekânsal dağılımı,
+- mikro ölçekte rekabet şiddeti,
+- ilçe bazında rekabet baskısı
+
+netleştirilmiştir.
+
+Bu çıktılar,
+talep ve fırsat analizleri için
+temel girdi olarak kullanılır.
+```
 
 ---
 
-## Bu Klasörün Çıktısı
-
-Bu aşamanın sonunda şunlar netleşir:
-
-* Cafe arzının mekânsal dağılımı
-* Mikro ölçekte rekabetin şiddeti
-* İlçe bazında rekabet baskısı profili
-
-Bu çıktılar, **talep / kalite / fırsat** analizleri için temel girdidir.
-
----
