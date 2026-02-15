@@ -46,11 +46,11 @@ def get_place_details(place_id: str) -> Optional[Dict[str, Any]]:
         if data.get("status") == "OK":
             return data.get("result")
         else:
-            print(f"⚠️  API Error for {place_id}: {data.get('status')}")
+            print(f" API Error for {place_id}: {data.get('status')}")
             return None
             
     except Exception as e:
-        print(f"❌ Request failed for {place_id}: {str(e)}")
+        print(f" Request failed for {place_id}: {str(e)}")
         return None
 
 
@@ -182,11 +182,11 @@ def flatten_place_data(place: Dict[str, Any]) -> Dict[str, Any]:
 
 def main():
     print("=" * 60)
-    print("🚀 ISTANBUL CAFES - ULTRA DATASET SCRAPER")
+    print(" ISTANBUL CAFES - ULTRA DATASET SCRAPER")
     print("=" * 60)
     
     # Read place_ids from CSV
-    print(f"\n📂 Reading place IDs from: {INPUT_FILE}")
+    print(f"\n Reading place IDs from: {INPUT_FILE}")
     place_ids = []
     
     try:
@@ -194,17 +194,17 @@ def main():
             reader = csv.DictReader(f)
             place_ids = [row["place_id"] for row in reader if row.get("place_id")]
     except FileNotFoundError:
-        print(f"❌ ERROR: {INPUT_FILE} not found!")
+        print(f" ERROR: {INPUT_FILE} not found!")
         return
     except Exception as e:
-        print(f"❌ ERROR reading file: {str(e)}")
+        print(f" ERROR reading file: {str(e)}")
         return
     
     total = len(place_ids)
-    print(f"✅ Loaded {total} place IDs")
+    print(f" Loaded {total} place IDs")
     
     if total == 0:
-        print("❌ No place IDs found. Exiting.")
+        print(" No place IDs found. Exiting.")
         return
     
     # Prepare output CSV
@@ -223,8 +223,8 @@ def main():
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
     
-    print(f"\n📝 Output file initialized: {OUTPUT_FILE}")
-    print(f"⏱️  Starting scraping with {REQUEST_DELAY}s delay...")
+    print(f"\n Output file initialized: {OUTPUT_FILE}")
+    print(f"  Starting scraping with {REQUEST_DELAY}s delay...")
     print("=" * 60)
     
     # Scrape each place
@@ -242,17 +242,17 @@ def main():
             row = flatten_place_data(place_data)
             scraped_data.append(row)
             success_count += 1
-            print(f"  ✅ {row.get('name', 'Unknown')} - {row.get('district', 'No district')}")
+            print(f"   {row.get('name', 'Unknown')} - {row.get('district', 'No district')}")
         else:
             fail_count += 1
-            print(f"  ❌ Failed to fetch details")
+            print(f"   Failed to fetch details")
         
         # Batch save
         if len(scraped_data) >= BATCH_SAVE_SIZE:
             with open(OUTPUT_FILE, "a", newline="", encoding="utf-8") as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
                 writer.writerows(scraped_data)
-            print(f"\n💾 Saved batch of {len(scraped_data)} records")
+            print(f"\n Saved batch of {len(scraped_data)} records")
             scraped_data = []
         
         # Rate limiting
@@ -263,16 +263,16 @@ def main():
         with open(OUTPUT_FILE, "a", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writerows(scraped_data)
-        print(f"\n💾 Saved final batch of {len(scraped_data)} records")
+        print(f"\n Saved final batch of {len(scraped_data)} records")
     
     # Final report
     print("\n" + "=" * 60)
-    print("🎉 SCRAPING COMPLETED!")
+    print(" SCRAPING COMPLETED!")
     print("=" * 60)
-    print(f"✅ Successfully scraped: {success_count}")
-    print(f"❌ Failed: {fail_count}")
-    print(f"📊 Success rate: {(success_count/total*100):.1f}%")
-    print(f"📁 Output file: {OUTPUT_FILE}")
+    print(f" Successfully scraped: {success_count}")
+    print(f" Failed: {fail_count}")
+    print(f" Success rate: {(success_count/total*100):.1f}%")
+    print(f" Output file: {OUTPUT_FILE}")
     print("=" * 60)
 
 
