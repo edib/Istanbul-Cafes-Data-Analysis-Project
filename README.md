@@ -20,11 +20,11 @@
 |---|--------|----------|-------|
 | 00 | [Veri Toplama](#-00---veri-toplama) | Google Places API ile Geo-Grid tarama | [→ Detay](00_data_collect/README.md) |
 | 01 | [Veri Pipeline](#-01---veri-pipeline) | Raw → Clean → Mart dönüşümü | [→ Detay](01_data_pipeline/README.md) |
-| 02 | [Keşifsel Analiz](#-02---keşifsel-analiz) | Descriptive & diagnostic analiz | [→ Detay](02_exploratory_analysis/02_exploratory_analysis.md) |
-| 03 | [Mekânsal Rekabet Analizi](#-03---mekânsal-rekabet-analizi) | Arz dağılımı & 2km rekabet | [→ Detay](03_spatial_competition_analysis/spatial_competition_analysis.md) |
+| 02 | [Keşifsel Analiz](#-02---keşifsel-analiz) | Descriptive & diagnostic analiz | [→ Detay](02_exploratory_analysis/README.md) |
+| 03 | [Mekânsal Rekabet Analizi](#-03---mekânsal-rekabet-analizi) | Arz dağılımı & 2km rekabet | [→ Detay](03_spatial_competition_analysis/README.md) |
 | 04 | [Talep ve Kalite Analizi](#-04---talep-ve-kalite-analizi) | Trafik proxy, rating güvenilirliği, fiyat–kalite | [→ Detay](04_demand_and_quality_analysis/README.md) |
-| 05 | [Fırsat Modelleme](#-05---fırsat-modelleme) | Opportunity score & category gap | [→ Detay](05_opportunity_modeling/opportunity_modeling.md) |
-| 06 | [Karar Çerçevesi](#-06---karar-çerçevesi) | Çok kriterli karar modeli (decision score) | [→ Detay](06_decision_framework/06_decision_framework.md) |
+| 05 | [Fırsat Modelleme](#-05---fırsat-modelleme) | Opportunity score & category gap | [→ Detay](05_opportunity_modeling/README.md) |
+| 06 | [Karar Çerçevesi](#-06---karar-çerçevesi) | Çok kriterli karar modeli (decision score) | [→ Detay](06_decision_framework/README.md) |
 | 07 | [Dashboard & Raporlama](#-07---dashboard--raporlama) | Superset dashboard yorumlama | [→ Detay](07_dashboard_views/README.md) |
 | 📖 | [Sözlük / Dictionary](#-sözlük--dictionary-index) | Kavram ve teknik terim açıklamaları | — |
 
@@ -134,7 +134,7 @@ mart.cafe_competition_2km ── 2km yarıçap rekabet
 
 ## 📈 02 — Keşifsel Analiz
 
-📄 **Detaylı Dokümantasyon:** [02_exploratory_analysis/02_exploratory_analysis.md](02_exploratory_analysis/02_exploratory_analysis.md)
+📄 **Detaylı Dokümantasyon:** [02_exploratory_analysis/02_exploratory_analysis.md](02_exploratory_analysis/README.md)
 
 ### Temel Sorular
 
@@ -164,7 +164,7 @@ mart.cafe_competition_2km ── 2km yarıçap rekabet
 
 ## 🗺️ 03 — Mekânsal Rekabet Analizi
 
-📄 **Detaylı Dokümantasyon:** [03_spatial_competition_analysis/spatial_competition_analysis.md](03_spatial_competition_analysis/spatial_competition_analysis.md)
+📄 **Detaylı Dokümantasyon:** [03_spatial_competition_analysis/README.md](03_spatial_competition_analysis/README.md)
 
 ### Üretilen Metrikler
 
@@ -229,7 +229,7 @@ mart.cafe_competition_2km ── 2km yarıçap rekabet
 
 ## 🎯 05 — Fırsat Modelleme
 
-📄 **Detaylı Dokümantasyon:** [05_opportunity_modeling/opportunity_modeling.md](05_opportunity_modeling/opportunity_modeling.md)
+📄 **Detaylı Dokümantasyon:** [05_opportunity_modeling/README.md](05_opportunity_modeling/README.md)
 
 ### Opportunity Score Formülü
 
@@ -266,7 +266,7 @@ gap_score = global_type_share − district_type_share
 
 ## ⚖️ 06 — Karar Çerçevesi
 
-📄 **Detaylı Dokümantasyon:** [06_decision_framework/06_decision_framework.md](06_decision_framework/06_decision_framework.md)
+📄 **Detaylı Dokümantasyon:** [06_decision_framework/README.md](06_decision_framework/README.md)
 
 ### Decision Score Formülü
 
@@ -312,7 +312,7 @@ clean.cafes → mart.district_summary → mart.cafe_competition_2km
 
 ## 📋 07 — Dashboard & Raporlama
 
-📄 **Detaylı Dokümantasyon:** [07_dashboard_views/07_dashboard_views.md](07_dashboard_views/07_dashboard_views.md)
+📄 **Detaylı Dokümantasyon:** [07_dashboard_views/README.md](07_dashboard_views/README.md)
 
 ### Dashboard Görselleri (14 Panel)
 
@@ -352,56 +352,6 @@ clean.cafes → mart.district_summary → mart.cafe_competition_2km
 | Mekânsal Analiz | PostGIS (`ST_DWithin`, `ST_Buffer`, `ST_Contains`, `ST_MakePoint`) |
 | Görselleştirme | Apache Superset |
 | Veri İşleme | SQL (Window Functions, CTE, Lateral Join) |
-
----
-
-## 📁 Proje Yapısı
-
-```
-Istanbul-Cafes-Data-Analysis-Project/
-│
-├── README.md                              ← Bu dosya
-│
-├── 00_data_collect/                       ← Veri toplama scriptleri
-│   ├── readme.md
-│   ├── grid_scan_collect.py
-│   ├── place_details_ultra.py
-│   └── place_id_collect.py
-│
-├── 01_data_pipeline/                      ← Raw → Clean → Mart
-│   ├── README.md
-│   ├── 01_data_pipeline.sql
-│   └── cafes.csv
-│
-├── 02_exploratory_analysis/               ← Keşifsel analiz
-│   ├── 02_exploratory_analysis.md
-│   ├── exploratory.sql
-│   ├── cafes.csv
-│   ├── district_summary.csv
-│   └── cafe_competition_2km.csv
-│
-├── 03_spatial_competition_analysis/       ← Mekânsal rekabet
-│   ├── spatial_competition_analysis.md
-│   └── sql/
-│       └── spatial_competition.sql
-│
-├── 04_demand_and_quality_analysis/        ← Talep & kalite
-│   ├── README.md
-│   ├── v_traffic_heatmap_final.csv
-│   ├── v_scatter_cafe_rating_reviews.csv
-│   └── v_price_value_index.csv
-│
-├── 05_opportunity_modeling/               ← Fırsat modelleme
-│   ├── opportunity_modeling.md
-│   └── opportunity_modeling.sql
-│
-├── 06_decision_framework/                 ← Karar çerçevesi
-│   ├── 06_decision_framework.md
-│   └── decision_framework.sql
-│
-└── 07_dashboard_views/                    ← Dashboard yorumlama
-    └── 07_dashboard_views.md
-```
 
 ---
 
